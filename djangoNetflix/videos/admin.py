@@ -5,10 +5,10 @@ from videos import models
 class VideoAllAdmin(admin.ModelAdmin):
     '''Customize what inside of the VideoAdmin'''
 
-    list_display =  ['title', 'id', 'video_id', 'is_published']
+    list_display =  ['title', 'id', 'state', 'video_id', 'is_published']
     search_fields = ['title']
-    list_filter =  ['active']
-    readonly_fields = ['id', 'is_published']
+    list_filter =  ['active', 'state']
+    readonly_fields = ['id', 'is_published', 'publish_timestamp']
     
     class Meta:
         model = models.VideoAllProxy
