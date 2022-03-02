@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.utils import timezone
 from django.utils.text import slugify
 from videos.models import Video
+from djangoNetflix.db.models import PublishStateOptions
 
 class VideoModelTests(TestCase):
     '''Test video model'''
@@ -14,7 +15,7 @@ class VideoModelTests(TestCase):
         )
         self.obj_b = Video.objects.create(
             title='This is a test title2',
-            state=Video.VideoStateOptions.PUBLISH,
+            state=PublishStateOptions.PUBLISH,
             video_id='abcd'
         )
 
@@ -42,16 +43,16 @@ class VideoModelTests(TestCase):
 
     def test_draft_case(self):
         '''Test draft case works in videos'''
-        queryset = Video.objects.filter(state=Video.VideoStateOptions.DRAFT)
+        queryset = Video.objects.filter(state=PublishStateOptions.DRAFT)
 
         self.assertEqual(queryset.count(), 1)
 
     def test_publish_case(self):
         '''Test publish case works in videos'''
-        queryset = Video.objects.filter(state=Video.VideoStateOptions.PUBLISH)
+        queryset = Video.objects.filter(state=PublishStateOptions.PUBLISH)
         now = timezone.now()
         published_queryset = Video.objects.filter(
-            state=Video.VideoStateOptions.PUBLISH,
+            state=PublishStateOptions.PUBLISH,
             publish_timestamp__lte=now
         )
 

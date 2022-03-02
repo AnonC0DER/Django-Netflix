@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils import timezone
-from django.utils.text import slugify
+from djangoNetflix.db.models import PublishStateOptions
 
 
 class VideoQuerySet(models.QuerySet):
@@ -8,7 +8,7 @@ class VideoQuerySet(models.QuerySet):
     def published(self):
         now = timezone.now()
         return self.filter(
-            state=Video.VideoStateOptions.PUBLISH,
+            state=PublishStateOptions.PUBLISH,
             publish_timestamp__lte=now
         )
 
@@ -25,14 +25,6 @@ class VideoManager(models.Manager):
 
 class Video(models.Model):
     '''Video model'''
-    class VideoStateOptions(models.TextChoices):
-        '''state choices'''
-        # CONSTANT = DB_VALUE, USER_DISPLAY_VA
-        PUBLISH = 'PU', 'Published'
-        DRAFT = 'DR', 'Draft'
-        # UNLISTED = 'UN', 'Unlisted'
-        # PRIAVATE = 'PR', 'Priavate'
-
     title = models.CharField(max_length=220)
     description = models.TextField(blank=True, null=True)
     slug = models.SlugField(blank=True, null=True) # this-is-my-video
@@ -40,8 +32,8 @@ class Video(models.Model):
     active = models.BooleanField(default=True)
     timestamp = models.DateTimeField(auto_now_add=True)
     update = models.DateTimeField(auto_now=True)
-    state = models.CharField(max_length=2, choices=VideoStateOptions.choices,
-    default=VideoStateOptions.DRAFT)
+    state = models.CharField(max_length=2, choices=PublishStateOptions.choices,
+    default=PublishStateOptions.DRAFT)
     publish_timestamp = models.DateTimeField(auto_now_add=False, auto_now=False, blank=True, null=True)
 
     objects = VideoManager()
@@ -52,19 +44,6 @@ class Video(models.Model):
     @property
     def is_published(self):
         return self.active
-
-    def save(self, *args, **kwargs):
-        '''Override save() to set publish_timestamp and slug'''
-        if self.state == self.VideoStateOptions.PUBLISH and self.publish_timestamp is None:
-            self.publish_timestamp = timezone.now()
-        
-        elif self.state == self.VideoStateOptions.DRAFT:
-            self.publish_timestamp = None
-        
-        if self.slug is None:
-            self.slug = slugify(self.title)
-
-        super().save(*args, **kwargs)
 
 
 class VideoAllProxy(Video):
