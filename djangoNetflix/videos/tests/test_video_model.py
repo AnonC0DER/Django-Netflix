@@ -1,17 +1,29 @@
 from django.test import TestCase
 from django.utils import timezone
+from django.utils.text import slugify
 from videos.models import Video
 
 class VideoModelTests(TestCase):
     '''Test video model'''
 
     def setUp(self):
-        '''Run before each test'''
-        Video.objects.create(title='This is a test title')
-        Video.objects.create(
+        '''Run before each test and create two Video objects'''
+        self.obj_a = Video.objects.create(
             title='This is a test title',
-            state=Video.VideoStateOptions.PUBLISH
+            video_id='abc'
         )
+        self.obj_b = Video.objects.create(
+            title='This is a test title2',
+            state=Video.VideoStateOptions.PUBLISH,
+            video_id='abcd'
+        )
+
+    def test_slug_field(self):
+        '''Test slug of objects are correct'''
+        title = self.obj_a.title
+        test_slug = slugify(title)
+
+        self.assertEqual(test_slug, self.obj_a.slug)
 
     def test_valid_title(self):
         '''Testing valid title'''
