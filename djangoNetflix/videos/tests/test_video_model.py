@@ -56,3 +56,10 @@ class VideoModelTests(TestCase):
         )
 
         self.assertTrue(published_queryset.exists())
+    
+    def test_publish_manager(self):
+        published_queryset = Video.objects.all().published()
+        published_queryset2 = Video.objects.published()
+
+        self.assertTrue(published_queryset.exists())
+        self.assertTrue(published_queryset.count(), published_queryset2.count())
