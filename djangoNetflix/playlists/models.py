@@ -29,7 +29,7 @@ class Playlist(models.Model):
     description = models.TextField(blank=True, null=True)
     slug = models.SlugField(blank=True, null=True) # this-is-my-video
     video = models.ForeignKey(Video, null=True, blank=True, on_delete=models.SET_NULL, related_name='playlist_featured') # one video per playlist
-    videos = models.ManyToManyField(Video, blank=True, related_name='playlist_item')
+    videos = models.ManyToManyField(Video, blank=True, related_name='playlist_item', through='PlaylistItem')
     active = models.BooleanField(default=True)
     timestamp = models.DateTimeField(auto_now_add=True)
     update = models.DateTimeField(auto_now=True)
@@ -45,3 +45,13 @@ class Playlist(models.Model):
     @property
     def is_published(self):
         return self.active
+
+
+class PlaylistItem(models.Model):
+    playlist = models.ForeignKey(Playlist, on_delete=models.CASCADE)
+    video = models.ForeignKey(Video, on_delete=models.CASCADE)
+    order = models.IntegerField(default=1)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['order', '-timestamp']
