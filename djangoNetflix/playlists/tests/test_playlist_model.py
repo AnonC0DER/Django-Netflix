@@ -7,29 +7,54 @@ from djangoNetflix.db.models import PublishStateOptions
 
 class PlaylistModelTests(TestCase):
     '''Test video model'''
+    def create_videos(self):
+        '''Create sample video objects'''
+        video_a = Video.objects.create(title='My title', video_id='abc123')
+        video_b = Video.objects.create(title='My title', video_id='abc1234')
+        video_c = Video.objects.create(title='My title', video_id='abc1235')
+        
+        self.video_a = video_a
+        self.video_b = video_b
+        self.video_c = video_c
 
     def setUp(self):
         '''Run before each test and create two Playlist objects'''
-        video_a = Video.objects.create(title='My title', video_id='abc123')
-        self.video_a = video_a
-
+        self.create_videos()
+        
         self.obj_a = Playlist.objects.create(
             title='This is a test title',
-            video=video_a
+            video=self.video_a
         )
-        self.obj_b = Playlist.objects.create(
+        obj_b = Playlist.objects.create(
             title='This is a test title2',
             state=PublishStateOptions.PUBLISH,
-            video=video_a
+            video=self.video_a,
         )
+        v_qs = Video.objects.all()
+        obj_b.videos.set(v_qs)
+        obj_b.save()
+        self.obj_b = obj_b
 
-    def test_playlist_video(self):
+    def test_playlist_video_items(self):
         '''Test there's a foreign key connection'''
         self.assertEqual(self.obj_a.video, self.video_a)
 
+    def test_playlist_video(self):
+        '''Test playlist video items'''
+        count = self.obj_b.videos.all().count()
+        
+        self.assertEqual(count, 3)
+
+    def test_video_playlist_ids_propery(self):
+        '''Test video playlist ids'''
+        ids = self.obj_a.video.get_playlist_ids()
+        actual_ids = list(Playlist.objects.filter(video=self.video_a).values_list('id', flat=True))
+
+        self.assertEqual(ids, actual_ids)
+
     def test_video_playlist(self):
         '''Test there's a foreign key connection'''
-        queryset = self.video_a.playlist_set.all()
+        queryset = self.video_a.playlist_featured.all()
         
         self.assertEqual(queryset.count(), 2)
 
