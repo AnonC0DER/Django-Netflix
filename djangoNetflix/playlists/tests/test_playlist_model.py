@@ -16,6 +16,7 @@ class PlaylistModelTests(TestCase):
         self.video_a = video_a
         self.video_b = video_b
         self.video_c = video_c
+        self.v_qs = Video.objects.all()
 
     def setUp(self):
         '''Run before each test and create two Playlist objects'''
@@ -30,14 +31,21 @@ class PlaylistModelTests(TestCase):
             state=PublishStateOptions.PUBLISH,
             video=self.video_a,
         )
-        v_qs = Video.objects.all()
-        obj_b.videos.set(v_qs)
+        obj_b.videos.set(self.v_qs)
         obj_b.save()
         self.obj_b = obj_b
 
     def test_playlist_video_items(self):
         '''Test there's a foreign key connection'''
         self.assertEqual(self.obj_a.video, self.video_a)
+    
+    def test_playlist_video_through_model(self):
+        '''Test playlist video through model'''
+        v_qs = sorted(list(self.v_qs.values_list('id')))
+        video_qs = sorted(list(self.obj_b.videos.all().values_list('id')))
+        playlist_item_qs = sorted(list(self.obj_b.playlistitem_set.all().values_list('video')))
+
+        self.assertEqual(v_qs, video_qs, playlist_item_qs)
 
     def test_playlist_video(self):
         '''Test playlist video items'''
