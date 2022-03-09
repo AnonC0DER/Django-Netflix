@@ -7,6 +7,15 @@ from djangoNetflix.db.models import PublishStateOptions
 
 class PlaylistModelTests(TestCase):
     '''Test video model'''
+    def create_show_with_seasons(self):
+        the_office = Playlist.objects.create(title='The Office')
+        
+        season_1 = Playlist.objects.create(title='The Office Season 1', parent=the_office, order=1)
+        season_2 = Playlist.objects.create(title='The Office Season 2', parent=the_office, order=2)
+        season_3 = Playlist.objects.create(title='The Office Season 3', parent=the_office, order=3)
+        
+        self.show = the_office
+
     def create_videos(self):
         '''Create sample video objects'''
         video_a = Video.objects.create(title='My title', video_id='abc123')
@@ -21,6 +30,7 @@ class PlaylistModelTests(TestCase):
     def setUp(self):
         '''Run before each test and create two Playlist objects'''
         self.create_videos()
+        self.create_show_with_seasons()
         
         self.obj_a = Playlist.objects.create(
             title='This is a test title',
@@ -34,6 +44,13 @@ class PlaylistModelTests(TestCase):
         obj_b.videos.set(self.v_qs)
         obj_b.save()
         self.obj_b = obj_b
+
+    def test_show_has_seasons(self):
+        '''Test show's seasons'''
+        seasons = self.show.playlist_set.all()
+
+        self.assertTrue(seasons.exists())
+        self.assertEqual(seasons.count(), 3)
 
     def test_playlist_video_items(self):
         '''Test there's a foreign key connection'''
@@ -74,8 +91,7 @@ class PlaylistModelTests(TestCase):
         self.assertEqual(test_slug, self.obj_a.slug)
 
     def test_valid_title(self):
-        '''Testing valid title'''
-        
+        '''Testing valid title'''    
         title = 'This is a test title'
         queryset = Playlist.objects.filter(title=title)
 
@@ -83,16 +99,15 @@ class PlaylistModelTests(TestCase):
 
     def test_created_count(self):
         '''Test there is only one video in database which created in setUp'''
-
         queryset = Playlist.objects.all()
 
-        self.assertEqual(queryset.count(), 2)
+        self.assertEqual(queryset.count(), 6)
 
     def test_draft_case(self):
         '''Test draft case works in videos'''
         queryset = Playlist.objects.filter(state=PublishStateOptions.DRAFT)
 
-        self.assertEqual(queryset.count(), 1)
+        self.assertEqual(queryset.count(), 5)
 
     def test_publish_case(self):
         '''Test publish case works in videos'''
@@ -106,6 +121,7 @@ class PlaylistModelTests(TestCase):
         self.assertTrue(published_queryset.exists())
     
     def test_publish_manager(self):
+        '''Test publish manager'''
         published_queryset = Playlist.objects.all().published()
         published_queryset2 = Playlist.objects.published()
 
