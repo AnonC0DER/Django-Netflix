@@ -49,6 +49,36 @@ class Playlist(models.Model):
         return self.active
 
 
+class TVShowProxyManager(PlaylistManager):
+    def all(self):
+        return self.get_queryset().filter(parent__isnull=True)
+
+
+class TVShowProxy(Playlist):
+    '''TV show proxy model'''
+    objects = TVShowProxyManager()
+    
+    class Meta:
+        verbose_name = 'TV Show'
+        verbose_name_plural = 'TV Shows'
+        proxy = True
+
+
+class TVShowSeasonProxyManager(PlaylistManager):
+    def all(self):
+        return self.get_queryset().filter(parent__isnull=False)
+
+
+class TVShowSeasonProxy(Playlist):
+    '''Season proxy model'''
+
+    objects = TVShowSeasonProxyManager()
+    class Meta:
+        verbose_name = 'Season'
+        verbose_name_plural = 'Seasons'
+        proxy = True
+
+
 class PlaylistItem(models.Model):
     playlist = models.ForeignKey(Playlist, on_delete=models.CASCADE)
     video = models.ForeignKey(Video, on_delete=models.CASCADE)
