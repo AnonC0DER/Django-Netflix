@@ -3,7 +3,7 @@ from playlists.models import TVShowSeasonProxy, Playlist, PlaylistItem, TVShowPr
 
 class MovieProxyAdmin(admin.ModelAdmin):
     list_display = ['title']
-    fields = ['title', 'description', 'state', 'video', 'slug']
+    fields = ['title', 'description', 'state', 'category', 'video', 'slug']
     class Meta:
         model = MovieProxy
 
@@ -37,7 +37,7 @@ class TVShowProxyAdmin(admin.ModelAdmin):
     '''Playlist admin page'''
     inlines = [TVShowSeasonProxyInline]
     list_display = ['title']
-    fields = ['title', 'description', 'state', 'video', 'slug']
+    fields = ['title', 'description', 'state', 'category', 'video', 'slug']
     class Meta:
         model = TVShowProxy
     
