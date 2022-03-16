@@ -1,8 +1,10 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.contenttypes.fields import GenericRelation
 from djangoNetflix.db.models import PublishStateOptions
 from videos.models import Video
 from categories.models import Category
+from tags.models import TaggedItem
 
 
 class PlaylistQuerySet(models.QuerySet):
@@ -49,6 +51,7 @@ class Playlist(models.Model):
     state = models.CharField(max_length=2, choices=PublishStateOptions.choices,
     default=PublishStateOptions.DRAFT)
     publish_timestamp = models.DateTimeField(auto_now_add=False, auto_now=False, blank=True, null=True)
+    tags = GenericRelation(TaggedItem, related_query_name='playlist')
 
     objects = PlaylistManager()
 
