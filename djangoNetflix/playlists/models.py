@@ -1,10 +1,12 @@
 from django.db import models
+from django.db.models import Avg, Max, Min
 from django.utils import timezone
 from django.contrib.contenttypes.fields import GenericRelation
 from djangoNetflix.db.models import PublishStateOptions
 from videos.models import Video
 from categories.models import Category
 from tags.models import TaggedItem
+from ratings.models import Rating
 
 
 class PlaylistQuerySet(models.QuerySet):
@@ -52,12 +54,19 @@ class Playlist(models.Model):
     default=PublishStateOptions.DRAFT)
     publish_timestamp = models.DateTimeField(auto_now_add=False, auto_now=False, blank=True, null=True)
     tags = GenericRelation(TaggedItem, related_query_name='playlist')
+    ratings = GenericRelation(Rating, related_query_name='playlist')
 
     objects = PlaylistManager()
 
     def __str__(self):
         return self.title
     
+    def get_rating_avg(self):
+        return Playlist.objects.filter(id=self.id).aggregate(average=Avg('ratings__value'))
+    
+    def get_rating_spread(self):
+        return Playlist.objects.filter(id=self.id).aggregate(max=Max('ratings__value'), min=Min('ratings__value'))
+
     @property
     def is_published(self):
         return self.active
