@@ -1,3 +1,27 @@
-from django.shortcuts import render
+from django.views.generic import ListView
+from playlists.models import Playlist, MovieProxy, TVShowProxy
 
-# Create your views here.
+class PlaylistMixin():
+    template_name = 'playlist_list.html'
+    title = None
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        if self.title is not None:
+            context['title'] = self.title
+        return context
+
+
+class MovieListView(PlaylistMixin, ListView):
+    queryset = MovieProxy.objects.all()
+    title = 'Movies'
+
+
+class TVShowListView(PlaylistMixin, ListView):
+    queryset = TVShowProxy.objects.all()
+    title = 'TVShows'
+
+
+class FeaturedPlaylistListView(PlaylistMixin, ListView):
+    queryset = Playlist.objects.featured_playlists()
+    title = 'Featured'
