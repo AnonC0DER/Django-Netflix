@@ -6,6 +6,9 @@ from playlists import models
 
 
 @receiver(pre_save, sender=models.Playlist)
+@receiver(pre_save, sender=models.MovieProxy)
+@receiver(pre_save, sender=models.TVShowSeasonProxy)
+@receiver(pre_save, sender=models.TVShowProxy)
 def publish_state_pre_save(sender, instance, *args, **kwargs):
     '''Set publish_timestamp using pre_save signal'''
     is_publish = instance.state == models.PublishStateOptions.PUBLISH
@@ -19,6 +22,9 @@ def publish_state_pre_save(sender, instance, *args, **kwargs):
 
 
 @receiver(pre_save, sender=models.Playlist)
+@receiver(pre_save, sender=models.MovieProxy)
+@receiver(pre_save, sender=models.TVShowSeasonProxy)
+@receiver(pre_save, sender=models.TVShowProxy)
 def slugify_pre_save(sender, instance, *args, **kwargs):
     '''Set slug using pre_save signal'''
     title = instance.title

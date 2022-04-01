@@ -1,6 +1,5 @@
 from django.db import models
 from django.db.models import Avg, Max, Min
-from django.utils import timezone
 from django.contrib.contenttypes.fields import GenericRelation
 from djangoNetflix.db.models import PublishStateOptions
 from videos.models import Video
@@ -12,10 +11,8 @@ from ratings.models import Rating
 class PlaylistQuerySet(models.QuerySet):
     '''Filter publish Playlist queryset'''
     def published(self):
-        now = timezone.now()
         return self.filter(
-            state=PublishStateOptions.PUBLISH,
-            publish_timestamp__lte=now
+            state=PublishStateOptions.PUBLISH
         )
 
 
@@ -70,6 +67,9 @@ class Playlist(models.Model):
     def get_rating_spread(self):
         return Playlist.objects.filter(id=self.id).aggregate(max=Max('ratings__value'), min=Min('ratings__value'))
 
+    def get_short_display(self):
+        return ''
+
     @property
     def is_published(self):
         return self.active
@@ -112,6 +112,9 @@ class TVShowProxy(Playlist):
     def save(self, *args, **kwargs):
         self.type = Playlist.PlaylistTypeChoices.SHOW
         super().save(*args, **kwargs)
+    
+    def get_short_display(self):
+        return f'{self.playlist_set.published().count()} Seasons'
 
 
 class TVShowSeasonProxyManager(PlaylistManager):
