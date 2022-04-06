@@ -13,6 +13,11 @@
 
 {{ object.slug }}
 
+<h2>Seasons</h2>
+{% for season in object.seasons %}
 
+<li>{{ season.order }} | {{ season.title }} | {{ season.slug }}</li>
+
+{% endfor %}
 
 {% endblock content %}
