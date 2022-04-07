@@ -52,7 +52,7 @@ class TVShowDetailView(PlaylistMixin, DetailView):
     
 class TVShowSeasonDetailView(PlaylistMixin, DetailView):
     template_name = 'playlists/season_detail.html'
-    queryset = TVShowProxy.objects.all()
+    queryset = TVShowSeasonProxy.objects.all()
 
     def get_object(self):
         kwargs = self.kwargs

@@ -10,10 +10,11 @@ class PlaylistModelTests(TestCase):
     def create_show_with_seasons(self):
         the_office = TVShowProxy.objects.create(title='The Office')
         
-        season_1 = TVShowSeasonProxy.objects.create(title='The Office Season 1', parent=the_office, order=1, state=PublishStateOptions.PUBLISH)
+        self.season_1 = TVShowSeasonProxy.objects.create(title='The Office Season 1', parent=the_office, order=1, state=PublishStateOptions.PUBLISH)
         season_2 = TVShowSeasonProxy.objects.create(title='The Office Season 2', parent=the_office, order=2)
         season_3 = TVShowSeasonProxy.objects.create(title='The Office Season 3', parent=the_office, order=3)
         season_4 = TVShowSeasonProxy.objects.create(title='The Office Season 4', parent=the_office, order=4)
+        self.season_11 = TVShowSeasonProxy.objects.create(title='The Office Season 1', parent=the_office, order=11)
         
         self.show = the_office
 
@@ -51,7 +52,11 @@ class PlaylistModelTests(TestCase):
         seasons = self.show.playlist_set.all()
 
         self.assertTrue(seasons.exists())
-        self.assertEqual(seasons.count(), 4)
+        self.assertEqual(seasons.count(), 5)
+
+    def test_seasons_slug_unique(self):
+        '''Test seasons_1 obj slug and seasons_11 slug are not the same (unique)'''
+        self.assertNotEqual(self.season_1.slug, self.season_11.slug)
 
     def test_playlist_video_items(self):
         '''Test there's a foreign key connection'''
@@ -108,13 +113,13 @@ class PlaylistModelTests(TestCase):
         '''Test seasons created count'''
         queryset = TVShowSeasonProxy.objects.all()
 
-        self.assertEqual(queryset.count(), 4)
+        self.assertEqual(queryset.count(), 5)
 
     def test_tv_shows_draft_case(self):
         '''Test draft case works in videos'''
         queryset = TVShowSeasonProxy.objects.all().filter(state=PublishStateOptions.DRAFT)
 
-        self.assertEqual(queryset.count(), 3)
+        self.assertEqual(queryset.count(), 4)
     
     def test_seasons_draft_case(self):
         '''Test draft case works in videos'''

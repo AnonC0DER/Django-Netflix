@@ -26,6 +26,10 @@ class MovieProxyTests(TestCase):
             title=self.movie_title,
             video=self.video_a
         )
+        self.movie_a_dup = MovieProxy.objects.create(
+            title=self.movie_title,
+            video=self.video_a
+        )
         movie_b = MovieProxy.objects.create(
             title='This is a test title2',
             state=PublishStateOptions.PUBLISH,
@@ -44,6 +48,10 @@ class MovieProxyTests(TestCase):
         '''Test movie clip items'''
         count = self.movie_b.videos.all().count()
         self.assertEqual(count, 3)
+    
+    def test_movies_slug_unique(self):
+        '''Test movie_a obj slug and movie_a_dup slug are not the same (unique)'''
+        self.assertNotEqual(self.movie_a.slug, self.movie_a_dup.slug)
 
     def test_slug_field(self):
         '''Test slug of objects are correct'''
@@ -63,7 +71,7 @@ class MovieProxyTests(TestCase):
         '''Test draft case works in videos'''
         queryset = MovieProxy.objects.filter(state=PublishStateOptions.DRAFT)
 
-        self.assertEqual(queryset.count(), 1)
+        self.assertEqual(queryset.count(), 2)
 
     def test_publish_manager(self):
         '''Test publish manager'''
