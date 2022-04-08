@@ -73,6 +73,16 @@ class Playlist(models.Model):
     @property
     def is_published(self):
         return self.active
+    
+    def get_video_id(self):
+        '''Get main video ID render video for users'''
+        if self.video is None:
+            return None
+        return self.video.get_video_id()
+
+    def get_clips(self):
+        '''Get clips to render clips for users'''
+        return self.playlistitem_set.all().published()
 
 
 class MovieProxyManager(PlaylistManager):
@@ -84,6 +94,10 @@ class MovieProxy(Playlist):
     '''TV show proxy model'''
     objects = MovieProxyManager()
     
+    def get_movie_id(self):
+        '''Get movie ID render movie for users'''
+        return self.get_video_id()
+
     class Meta:
         verbose_name = 'Movie'
         verbose_name_plural = 'Movies'
@@ -113,10 +127,14 @@ class TVShowProxy(Playlist):
         self.type = Playlist.PlaylistTypeChoices.SHOW
         super().save(*args, **kwargs)
     
+    @property
+    def seasons(self):
+        return self.playlist_set.published()
+
     def get_short_display(self):
         return f'{self.playlist_set.published().count()} Seasons'
 
-
+    
 class TVShowSeasonProxyManager(PlaylistManager):
     def all(self):
         return self.get_queryset().filter(parent__isnull=False,
@@ -135,6 +153,34 @@ class TVShowSeasonProxy(Playlist):
     def save(self, *args, **kwargs):
         self.type = Playlist.PlaylistTypeChoices.SEASON
         super().save(*args, **kwargs)
+    
+    def get_season_trailer(self):
+        '''Get episodes to render episodes for users'''
+        return self.get_video_id()
+
+    def get_episodes(self):
+        '''Get episodes to render episodes for users'''
+        return self.playlistitem_set.all().published()
+
+
+class PlaylistItemQuerySet(models.QuerySet):
+    '''Filter publish Playlist queryset'''
+    def published(self):
+        return self.filter(
+            playlist__state=PublishStateOptions.PUBLISH,
+            video__state=PublishStateOptions.PUBLISH
+        )
+
+
+class PlaylistItemManager(models.Manager):
+    '''Custom model manager'''
+    def get_queryset(self):
+        # using=self._db -> use current database
+        return PlaylistItemQuerySet(self.model, using=self._db)
+
+    def published(self):
+        return self.get_queryset().published()
+
 
 class PlaylistItem(models.Model):
     playlist = models.ForeignKey(Playlist, on_delete=models.CASCADE)

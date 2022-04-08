@@ -46,10 +46,15 @@ class VideoModelTests(TestCase):
         queryset = Video.objects.filter(state=PublishStateOptions.DRAFT)
 
         self.assertEqual(queryset.count(), 1)
+    
+    def test_draft_case_2(self):
+        '''Test draft case works in videos'''
+        obj = Video.objects.filter(state=PublishStateOptions.DRAFT).first()
+
+        self.assertFalse(obj.is_published)
 
     def test_publish_case(self):
         '''Test publish case works in videos'''
-        queryset = Video.objects.filter(state=PublishStateOptions.PUBLISH)
         now = timezone.now()
         published_queryset = Video.objects.filter(
             state=PublishStateOptions.PUBLISH,
@@ -58,6 +63,12 @@ class VideoModelTests(TestCase):
 
         self.assertTrue(published_queryset.exists())
     
+    def test_publish_case_2(self):
+        '''Test publish case works in videos'''
+        obj = Video.objects.filter(state=PublishStateOptions.PUBLISH).first()
+
+        self.assertTrue(obj.is_published)
+
     def test_publish_manager(self):
         published_queryset = Video.objects.all().published()
         published_queryset2 = Video.objects.published()
