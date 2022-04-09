@@ -13,6 +13,7 @@
 
 {{ object.slug }}
 
+{% include 'videos/embed.html' with video_id=object.get_video_id %}
 
 
 {% endblock content %}

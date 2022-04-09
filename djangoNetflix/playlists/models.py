@@ -188,5 +188,7 @@ class PlaylistItem(models.Model):
     order = models.IntegerField(default=1)
     timestamp = models.DateTimeField(auto_now_add=True)
 
+    objects = PlaylistItemManager()
+
     class Meta:
         ordering = ['order', '-timestamp']
