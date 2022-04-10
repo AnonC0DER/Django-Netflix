@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import Avg, Max, Min
+from django.db.models import Avg, Max, Min, Q
 from django.contrib.contenttypes.fields import GenericRelation
 from djangoNetflix.db.models import PublishStateOptions
 from videos.models import Video
@@ -29,6 +29,12 @@ class PlaylistManager(models.Manager):
         return self.get_queryset().filter(type=Playlist.PlaylistTypeChoices.PLAYLIST)
         
 
+# class Featured(models.Model):
+#     '''Featured model'''
+#     playlists = models.ManyToManyField('Playlist', blank=True)
+
+
+
 class Playlist(models.Model):
     '''Playlist model'''
     class PlaylistTypeChoices(models.TextChoices):
@@ -39,6 +45,7 @@ class Playlist(models.Model):
         PLAYLIST = 'PLY', 'Playlist'
 
     parent = models.ForeignKey('self', blank=True, null=True, on_delete=models.SET_NULL)
+    related = models.ManyToManyField('self', blank=True, related_name='related', through='PlaylistRelated')
     category = models.ForeignKey(Category, related_name='playlists', blank=True, null=True, on_delete=models.SET_NULL)
     order = models.IntegerField(default=1)
     title = models.CharField(max_length=220)
@@ -192,3 +199,14 @@ class PlaylistItem(models.Model):
 
     class Meta:
         ordering = ['order', '-timestamp']
+
+
+def pr_limit_choices_to():
+    return Q(type=Playlist.PlaylistTypeChoices.MOVIE) | Q(type=Playlist.PlaylistTypeChoices.SHOW)
+
+class PlaylistRelated(models.Model):
+    '''Playlist related model'''
+    playlist = models.ForeignKey(Playlist, on_delete=models.CASCADE)
+    related = models.ForeignKey(Playlist, on_delete=models.CASCADE, related_name='related_item', limit_choices_to=pr_limit_choices_to)
+    order = models.IntegerField(default=1)
+    timestamp = models.DateTimeField(auto_now_add=True)

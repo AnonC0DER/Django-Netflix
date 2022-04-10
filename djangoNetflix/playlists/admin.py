@@ -1,6 +1,6 @@
 from django.contrib import admin
 from tags.admin import TaggedItemInline
-from playlists.models import TVShowSeasonProxy, Playlist, PlaylistItem, TVShowProxy, MovieProxy
+from playlists.models import PlaylistRelated, TVShowSeasonProxy, Playlist, PlaylistItem, TVShowProxy, MovieProxy
 
 class MovieProxyAdmin(admin.ModelAdmin):
     list_display = ['title']
@@ -46,6 +46,12 @@ class TVShowProxyAdmin(admin.ModelAdmin):
         return TVShowProxy.objects.all()
 
 
+class PlaylistRelatedInline(admin.TabularInline):
+    model = PlaylistRelated
+    fk_name = 'playlist'
+    extra = 0
+
+
 class PlaylistItemInline(admin.TabularInline):
     model = PlaylistItem
     extra = 0
@@ -53,7 +59,15 @@ class PlaylistItemInline(admin.TabularInline):
 
 class PlaylistAdmin(admin.ModelAdmin):
     '''Playlist admin page'''
-    inlines = [PlaylistItemInline]
+    inlines = [PlaylistItemInline, PlaylistRelatedInline]
+    fields = [
+        'title',
+        'description',
+        'slug',
+        'state',
+        'active'
+    ]
+
     class Meta:
         model = Playlist
 
