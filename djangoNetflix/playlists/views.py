@@ -76,12 +76,11 @@ class TVShowSeasonDetailView(PlaylistMixin, DetailView):
             raise Http404
 
         return obj
-        # qs = self.get_queryset().filter(parent__slug__iexact=show_slug, slug__iexact=season_slug)
-        # if not qs.count() == 1:
-        #     raise Http404
-        # return qs.first()
 
 
 class FeaturedPlaylistListView(PlaylistMixin, ListView):
+    template_name = 'playlists/featured_list.html'
     queryset = Playlist.objects.featured_playlists()
     title = 'Featured'
+
+    
