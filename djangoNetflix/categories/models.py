@@ -12,6 +12,9 @@ class Category(models.Model):
     updated = models.DateTimeField(auto_now=True) 
     tags = GenericRelation(TaggedItem, related_query_name='playlist')
     
+    def get_absolute_url(self):
+        return f'/category/{self.slug}/'
+
     class Meta:
         verbose_name = 'Category'
         verbose_name_plural = 'Categories'

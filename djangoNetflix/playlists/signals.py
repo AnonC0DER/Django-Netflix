@@ -1,9 +1,9 @@
 from django.db.models.signals import pre_save
 from django.utils import timezone
 from django.dispatch import receiver
-from django.utils.text import slugify
 from djangoNetflix.db.utils import get_unique_slug
 from playlists import models
+from categories.models import Category
 
 
 @receiver(pre_save, sender=models.Playlist)
@@ -26,6 +26,7 @@ def publish_state_pre_save(sender, instance, *args, **kwargs):
 @receiver(pre_save, sender=models.MovieProxy)
 @receiver(pre_save, sender=models.TVShowSeasonProxy)
 @receiver(pre_save, sender=models.TVShowProxy)
+@receiver(pre_save, sender=Category)
 def unique_slugify_pre_save(sender, instance, *args, **kwargs):
     '''Set slug using pre_save signal'''
     slug = instance.slug
