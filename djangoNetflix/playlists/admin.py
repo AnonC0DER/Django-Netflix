@@ -3,6 +3,7 @@ from tags.admin import TaggedItemInline
 from playlists.models import PlaylistRelated, TVShowSeasonProxy, Playlist, PlaylistItem, TVShowProxy, MovieProxy
 
 class MovieProxyAdmin(admin.ModelAdmin):
+    inlines = [TaggedItemInline]
     list_display = ['title']
     fields = ['title', 'description', 'state', 'category', 'video', 'slug']
     class Meta:
@@ -19,7 +20,7 @@ class SeasonEpisodeInline(admin.TabularInline):
 
 class TVShowSeasonProxyAdmin(admin.ModelAdmin):
     '''Playlist admin page'''
-    inlines = [SeasonEpisodeInline]
+    inlines = [TaggedItemInline, SeasonEpisodeInline]
     list_display = ['title', 'parent']
     class Meta:
         model = TVShowSeasonProxy
@@ -59,7 +60,7 @@ class PlaylistItemInline(admin.TabularInline):
 
 class PlaylistAdmin(admin.ModelAdmin):
     '''Playlist admin page'''
-    inlines = [PlaylistItemInline, PlaylistRelatedInline]
+    inlines = [PlaylistItemInline, PlaylistRelatedInline, TaggedItemInline]
     fields = [
         'title',
         'description',

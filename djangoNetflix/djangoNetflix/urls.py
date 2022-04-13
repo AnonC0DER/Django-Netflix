@@ -6,4 +6,5 @@ urlpatterns = [
     path('', include('playlists.urls')),
     path('category/', include('categories.urls')),
     path('categories/', include('categories.urls')),
+    path('tags/', include('tags.urls')),
 ]
