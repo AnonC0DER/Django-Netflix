@@ -3,7 +3,7 @@ from playlists.views import (
     PlaylistDetailView, MovieDetailView, 
     FeaturedPlaylistListView, TVShowListView, 
     MovieListView, TVShowDetailView,
-    TVShowSeasonDetailView
+    TVShowSeasonDetailView, SearchView
 )
 
 '''
@@ -22,4 +22,6 @@ urlpatterns = [
     path('shows/<slug:slug>/', TVShowDetailView.as_view()),
     path('shows/<slug:slug>/seasons/', TVShowDetailView.as_view()),
     path('shows/<slug:showSlug>/seasons/<slug:seasonsSlug>/', TVShowSeasonDetailView.as_view()),
+ 
+    path('search/', SearchView.as_view()),
 ]

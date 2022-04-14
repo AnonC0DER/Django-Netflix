@@ -6,6 +6,24 @@ from djangoNetflix.db.models import PublishStateOptions
 from playlists.mixins import PlaylistMixin
 
 
+class SearchView(PlaylistMixin, ListView):
+    def get_context_data(self):
+        query = self.request.GET.get('q')
+        context = super().get_context_data()
+        if query is not None:
+            context['title'] = f'Searched for {query}'
+        
+        else:
+            context['title'] = 'Perform a search'
+
+        return context
+
+
+    def get_queryset(self):
+        query = self.request.GET.get('q')
+        return Playlist.objects.all().movie_or_show().published().search(query=query)
+
+
 class PlaylistDetailView(PlaylistMixin, DetailView):
     template_name = 'playlists/playlist_detail.html'
     queryset = Playlist.objects.all()
