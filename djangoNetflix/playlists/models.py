@@ -89,7 +89,6 @@ class Playlist(models.Model):
         return self.playlistrelated_set.all()
     
     def get_absolute_url(self):
-        print(self.is_movie)
         if self.is_movie:
             return f'/movies/{self.slug}/'
         
