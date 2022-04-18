@@ -12,7 +12,7 @@ class RatingChoices(models.IntegerChoices):
     THREE = 3
     FOUR = 4
     FIVE = 5
-    __empty__ = 'Unknown'
+    # __empty__ = 'Unknown'
 
 
 class RatingQuerySet(models.QuerySet):

@@ -7,4 +7,5 @@ urlpatterns = [
     path('category/', include('categories.urls')),
     path('categories/', include('categories.urls')),
     path('tags/', include('tags.urls')),
+    path('', include('ratings.urls')),
 ]
